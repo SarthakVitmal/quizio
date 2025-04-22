@@ -12,63 +12,91 @@ datasource db {
     // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
     // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
     url      = env("DATABASE_URL")
-}
+    directUrl = env("DIRECT_URL")
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
-
-    @@index([name])
-}
-
-// Necessary for Next auth
-model Account {
-    id                       String  @id @default(cuid())
-    userId                   String
-    type                     String
-    provider                 String
-    providerAccountId        String
-    refresh_token            String? // @db.Text
-    access_token             String? // @db.Text
-    expires_at               Int?
-    token_type               String?
-    scope                    String?
-    id_token                 String? // @db.Text
-    session_state            String?
-    user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    refresh_token_expires_in Int?
-
-    @@unique([provider, providerAccountId])
-}
-
-model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    posts         Post[]
+  user_id                String   @id @default(cuid())
+  image                  String?
+  firstName              String
+  lastName               String
+  emailID                String   @unique
+  MobileNo               String
+  collegeName            String
+  role                   Role
+  emailVerified          Boolean  @default(false)
+  forgotPasswordToken    String?
+  emailVerificationToken String?
+  verificationTokenExpiry DateTime?
+  forgotPasswordExpiry    DateTime?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  // Relations
+  accounts               Account[]
+  sessions               Session[]
+  quizzes                Quiz[]   @relation("UserQuizzes")
+}
+
+enum Role {
+  faculty
+  student
+}
+
+model Quiz {
+  id             String   @id @default(cuid())
+  title          String
+  description    String?
+  quiz_owner_id  String
+  start_time     DateTime
+  end_time       DateTime
+  status         QuizStatus @default(DRAFT)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  owner          User     @relation("UserQuizzes", fields: [quiz_owner_id], references: [user_id])
+  @@index([title])
+}
+
+enum QuizStatus {
+  DRAFT
+  PUBLISHED
+  ENDED
+}
+
+model Account {
+  id                       String  @id @default(cuid())
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String? 
+  access_token             String? 
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String? 
+  session_state            String?
+  refresh_token_expires_in Int?
+  
+  user                     User    @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user         User     @relation(fields: [userId], references: [user_id], onDelete: Cascade)
 }
 
 model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-    @@unique([identifier, token])
+  @@unique([identifier, token])
 }

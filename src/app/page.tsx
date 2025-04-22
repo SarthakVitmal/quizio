@@ -1,69 +1,249 @@
-import Link from "next/link";
+import Link from "next/link"
+import Image from "next/image"
+import { MainNav } from "@/app/components/main-nav"
+import { Footer } from "@/app/components/footer"
+import { Button } from "@/components/ui/button"
+import { Card, Container, GradientButton, Heading, Section } from "@/app/components/ui-components"
+import { Award, BarChart, Brain, Clock, Globe, Lightbulb, Rocket, Trophy, Users } from 'lucide-react'
 
-import { LatestPost } from "@/app/_components/post";
-import { auth } from "@/server/auth";
-import { api, HydrateClient } from "@/trpc/server";
-
-export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
-  const session = await auth();
-
-  if (session?.user) {
-    void api.post.getLatest.prefetch();
-  }
-
+export default function HomePage() {
   return (
-    <HydrateClient>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-            Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-          </h1>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/usage/first-steps"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">First Steps →</h3>
-              <div className="text-lg">
-                Just the basics - Everything you need to know to set up your
-                database and authentication.
+    <div className="flex min-h-screen flex-col">
+      <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
+        <MainNav />
+      </header>
+      
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="relative overflow-hidden py-20 md:py-24 lg:py-32">
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgba(var(--primary),0.15),transparent_50%)]" />
+          <Container className="relative z-10">
+            <div className="grid items-center gap-12 md:grid-cols-2">
+              <div className="flex flex-col items-center text-center md:items-start md:text-left">
+                <h1 className="mb-4 font-heading text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
+                  Quizio – <span className="gradient-text">Learn, Play, Conquer.</span>
+                </h1>
+                <p className="mb-8 max-w-md text-lg text-muted-foreground">
+                  Create engaging quizzes, challenge your friends, and track your progress with our modern quiz platform.
+                </p>
+                <div className="flex flex-wrap gap-4">
+                  <GradientButton asChild size="lg">
+                    <Link href="/join-quiz">Join Quiz</Link>
+                  </GradientButton>
+                  <Button asChild size="lg" variant="outline">
+                    <Link href="/create-quiz">Create Quiz</Link>
+                  </Button>
+                </div>
               </div>
-            </Link>
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/introduction"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">Documentation →</h3>
-              <div className="text-lg">
-                Learn more about Create T3 App, the libraries it uses, and how
-                to deploy it.
+              <div className="relative mx-auto w-full max-w-md">
+                <div className="relative aspect-square animate-float">
+                  <Image
+                    src="/placeholder.svg?height=500&width=500"
+                    alt="Quiz illustration"
+                    width={500}
+                    height={500}
+                    className="rounded-2xl"
+                    priority
+                  />
+                </div>
+                <div className="absolute -right-4 -top-4 h-24 w-24 rounded-xl bg-purple-100 dark:bg-purple-900/20" />
+                <div className="absolute -bottom-4 -left-4 h-24 w-24 rounded-xl bg-blue-100 dark:bg-blue-900/20" />
               </div>
-            </Link>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-2xl text-white">
-              {hello ? hello.greeting : "Loading tRPC query..."}
-            </p>
-
-            <div className="flex flex-col items-center justify-center gap-4">
-              <p className="text-center text-2xl text-white">
-                {session && <span>Logged in as {session.user?.name}</span>}
-              </p>
-              <Link
-                href={session ? "/api/auth/signout" : "/api/auth/signin"}
-                className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-              >
-                {session ? "Sign out" : "Sign in"}
-              </Link>
             </div>
-          </div>
-
-          {session?.user && <LatestPost />}
-        </div>
+          </Container>
+        </section>
+        
+        {/* Features Section */}
+        <Section className="bg-muted/30">
+          <Container>
+            <div className="mx-auto mb-12 max-w-2xl text-center">
+              <Heading size="lg" className="mb-4">
+                Powerful Features for <span className="gradient-text">Modern Learning</span>
+              </Heading>
+              <p className="text-lg text-muted-foreground">
+                Everything you need to create, share, and analyze quizzes in one platform
+              </p>
+            </div>
+            
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {features.map((feature) => (
+                <Card key={feature.title} hover className="flex flex-col items-start">
+                  <div className="mb-4 rounded-lg bg-primary/10 p-3 text-primary">
+                    <feature.icon className="h-6 w-6" />
+                  </div>
+                  <h3 className="mb-2 text-xl font-medium">{feature.title}</h3>
+                  <p className="text-muted-foreground">{feature.description}</p>
+                </Card>
+              ))}
+            </div>
+          </Container>
+        </Section>
+        
+        {/* How It Works Section */}
+        <Section>
+          <Container>
+            <div className="mx-auto mb-12 max-w-2xl text-center">
+              <Heading className="mb-4">
+                How Quizio <span className="gradient-text">Works</span>
+              </Heading>
+              <p className="text-lg text-muted-foreground">
+                Get started in minutes with our simple and intuitive platform
+              </p>
+            </div>
+            
+            <div className="grid gap-8 md:grid-cols-3">
+              {steps.map((step, index) => (
+                <div key={step.title} className="flex flex-col items-center text-center">
+                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 text-white">
+                    <span className="font-heading text-xl font-bold">{index + 1}</span>
+                  </div>
+                  <h3 className="mb-2 text-xl font-medium">{step.title}</h3>
+                  <p className="text-muted-foreground">{step.description}</p>
+                </div>
+              ))}
+            </div>
+          </Container>
+        </Section>
+        
+        {/* Testimonials Section */}
+        <Section className="bg-muted/30">
+          <Container>
+            <div className="mx-auto mb-12 max-w-2xl text-center">
+              <Heading className="mb-4">
+                What Our <span className="gradient-text">Users Say</span>
+              </Heading>
+              <p className="text-lg text-muted-foreground">
+                Join thousands of satisfied educators and students
+              </p>
+            </div>
+            
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {testimonials.map((testimonial) => (
+                <Card key={testimonial.name} className="flex flex-col">
+                  <div className="mb-4 flex items-center gap-4">
+                    <div className="h-12 w-12 overflow-hidden rounded-full bg-muted">
+                      <Image
+                        src="/placeholder.svg?height=48&width=48"
+                        alt={testimonial.name}
+                        width={48}
+                        height={48}
+                      />
+                    </div>
+                    <div>
+                      <h4 className="font-medium">{testimonial.name}</h4>
+                      <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                    </div>
+                  </div>
+                  <p className="text-muted-foreground">{testimonial.content}</p>
+                </Card>
+              ))}
+            </div>
+          </Container>
+        </Section>
+        
+        {/* CTA Section */}
+        <Section>
+          <Container>
+            <Card gradient className="mx-auto max-w-4xl overflow-hidden">
+              <div className="grid gap-8 md:grid-cols-2">
+                <div className="flex flex-col justify-center">
+                  <Heading size="sm" className="mb-4 text-left">
+                    Ready to transform your quiz experience?
+                  </Heading>
+                  <p className="mb-6 text-muted-foreground">
+                    Join thousands of educators and students who are already using Quizio to make learning fun and engaging.
+                  </p>
+                  <div className="flex flex-wrap gap-4">
+                    <GradientButton asChild>
+                      <Link href="/register">Get Started Free</Link>
+                    </GradientButton>
+                    <Button variant="outline" asChild>
+                      <Link href="/contact">Contact Us</Link>
+                    </Button>
+                  </div>
+                </div>
+                <div className="relative hidden md:block">
+                  <Image
+                    src="/placeholder.svg?height=300&width=300"
+                    alt="Quiz platform"
+                    width={300}
+                    height={300}
+                    className="rounded-lg"
+                  />
+                </div>
+              </div>
+            </Card>
+          </Container>
+        </Section>
       </main>
-    </HydrateClient>
-  );
+      
+      <Footer />
+    </div>
+  )
 }
+
+const features = [
+  {
+    title: "Real-time Quizzes",
+    description: "Create and participate in live quizzes with real-time results and leaderboards.",
+    icon: Clock,
+  },
+  {
+    title: "Detailed Analytics",
+    description: "Track performance with comprehensive analytics and insights.",
+    icon: BarChart,
+  },
+  {
+    title: "Global Leaderboards",
+    description: "Compete with participants from around the world and climb the rankings.",
+    icon: Globe,
+  },
+  {
+    title: "Collaborative Learning",
+    description: "Work together with peers to solve challenges and share knowledge.",
+    icon: Users,
+  },
+  {
+    title: "Smart Assessment",
+    description: "AI-powered assessment to identify strengths and areas for improvement.",
+    icon: Brain,
+  },
+  {
+    title: "Gamified Experience",
+    description: "Earn badges, points, and rewards as you progress through quizzes.",
+    icon: Trophy,
+  },
+]
+
+const steps = [
+  {
+    title: "Create an Account",
+    description: "Sign up for free and set up your profile in just a few clicks.",
+  },
+  {
+    title: "Create or Join Quizzes",
+    description: "Create your own quizzes or join existing ones with a simple code.",
+  },
+  {
+    title: "Learn and Improve",
+    description: "Track your progress, analyze results, and improve your knowledge.",
+  },
+]
+
+const testimonials = [
+  {
+    name: "Sarah Johnson",
+    role: "High School Teacher",
+    content: "Quizio has transformed how I engage with my students. The interactive quizzes keep them motivated and the analytics help me identify areas where they need more support.",
+  },
+  {
+    name: "Michael Chen",
+    role: "University Student",
+    content: "I use Quizio to study for exams and it's been a game-changer. The competitive element makes learning fun and I retain information much better.",
+  },
+  {
+    name: "Dr. Emily Rodriguez",
+    role: "University Professor",
+    content: "As an educator, I appreciate how Quizio simplifies the assessment process while providing valuable insights into student performance.",
+  },
+]
