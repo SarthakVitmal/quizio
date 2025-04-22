@@ -66,10 +66,10 @@ export function MainNav() {
         </nav>
         <div className="flex items-center gap-2">
           <Button variant="outline" asChild>
-            <Link href="/login">Login</Link>
+            <Link href="/auth">Login</Link>
           </Button>
           <Button asChild>
-            <Link href="/register">Sign Up</Link>
+            <Link href="/auth">Sign Up</Link>
           </Button>
         </div>
       </div>

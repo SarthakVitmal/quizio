@@ -2,66 +2,65 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    url      = env("DATABASE_URL")
-    directUrl = env("DIRECT_URL")
-
+  provider  = "postgresql"
+  // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
+  // Further reading:
+  // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
+  // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
-  user_id                String   @id @default(cuid())
-  image                  String?
-  firstName              String
-  lastName               String
-  emailID                String   @unique
-  MobileNo               String
-  collegeName            String
-  role                   Role
-  emailVerified          Boolean  @default(false)
-  forgotPasswordToken    String?
-  emailVerificationToken String?
-  verificationTokenExpiry DateTime?
-  forgotPasswordExpiry    DateTime?
-  createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
-
-  // Relations
-  accounts               Account[]
-  sessions               Session[]
-  quizzes                Quiz[]   @relation("UserQuizzes")
-}
-
-enum Role {
-  faculty
-  student
+  id             String        @id @default(uuid())
+  email          String        @unique
+  name           String?
+  createdQuizzes Quiz[]        @relation("UserCreatedQuizzes")
+  participations Participant[] @relation("UserParticipations")
+  createdAt      DateTime      @default(now())
+  Account        Account[]
+  Session        Session[]
 }
 
 model Quiz {
-  id             String   @id @default(cuid())
-  title          String
-  description    String?
-  quiz_owner_id  String
-  start_time     DateTime
-  end_time       DateTime
-  status         QuizStatus @default(DRAFT)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  owner          User     @relation("UserQuizzes", fields: [quiz_owner_id], references: [user_id])
-  @@index([title])
+  id        String   @id @default(cuid())
+  title     String
+  creatorId String
+  code      String   @unique
+  startTime DateTime
+  endTime   DateTime
+  isEnded   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  creator      User          @relation("UserCreatedQuizzes", fields: [creatorId], references: [id])
+  questions    Question[]    @relation("QuizQuestions")
+  participants Participant[] @relation("QuizParticipants")
 }
 
-enum QuizStatus {
-  DRAFT
-  PUBLISHED
-  ENDED
+model Question {
+  id        String   @id @default(cuid())
+  quizId    String
+  text      String
+  options   String[] // You can also normalize into separate table if needed
+  answer    String // Correct answer
+  createdAt DateTime @default(now())
+
+  quiz Quiz @relation("QuizQuestions", fields: [quizId], references: [id])
+}
+
+model Participant {
+  id       String   @id @default(cuid())
+  quizId   String
+  userId   String
+  score    Int      @default(0)
+  joinedAt DateTime @default(now())
+
+  quiz Quiz @relation("QuizParticipants", fields: [quizId], references: [id])
+  user User @relation("UserParticipations", fields: [userId], references: [id])
 }
 
 model Account {
@@ -70,16 +69,16 @@ model Account {
   type                     String
   provider                 String
   providerAccountId        String
-  refresh_token            String? 
-  access_token             String? 
+  refresh_token            String?
+  access_token             String?
   expires_at               Int?
   token_type               String?
   scope                    String?
-  id_token                 String? 
+  id_token                 String?
   session_state            String?
   refresh_token_expires_in Int?
-  
-  user                     User    @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -90,7 +89,7 @@ model Session {
   userId       String
   expires      DateTime
 
-  user         User     @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {

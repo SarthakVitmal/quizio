@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, Container, GradientButton, Heading } from "@/app/components/ui-components"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { AtSign, Lock } from "lucide-react"
+import { AtSign, Lock, SquareUserRound } from "lucide-react"
 
 export default function AuthPage() {
   return (
@@ -92,14 +92,13 @@ export default function AuthPage() {
 
                 <TabsContent value="register">
                   <form className="space-y-4">
-                    <div className="grid gap-4 md:grid-cols-2">
+                    <div className="">
                       <div className="space-y-2">
-                        <Label htmlFor="first-name">First name</Label>
-                        <Input id="first-name" placeholder="John" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="last-name">Last name</Label>
-                        <Input id="last-name" placeholder="Doe" />
+                        <Label htmlFor="first-name">Name</Label>
+                        <div className="relative">
+                          <SquareUserRound className="absolute left-3 top-[0.6rem] h-4 w-4 text-muted-foreground" />
+                          <Input id="first-name" type="text" placeholder="John Doe" className="pl-10" />
+                          </div>
                       </div>
                     </div>
 

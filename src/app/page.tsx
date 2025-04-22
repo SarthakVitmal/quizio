@@ -28,17 +28,17 @@ export default function HomePage() {
                 </p>
                 <div className="flex flex-wrap gap-4">
                   <GradientButton asChild size="lg">
-                    <Link href="/join-quiz">Join Quiz</Link>
+                    <Link href="/auth">Join Quiz</Link>
                   </GradientButton>
                   <Button asChild size="lg" variant="outline">
-                    <Link href="/create-quiz">Create Quiz</Link>
+                    <Link href="/auth">Create Quiz</Link>
                   </Button>
                 </div>
               </div>
               <div className="relative mx-auto w-full max-w-md">
                 <div className="relative aspect-square animate-float">
                   <Image
-                    src="/placeholder.svg?height=500&width=500"
+                    src="/quiz.png"
                     alt="Quiz illustration"
                     width={500}
                     height={500}

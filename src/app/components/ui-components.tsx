@@ -97,7 +97,7 @@ export function GradientButton({
   return (
     <Button
       className={cn(
-        "gradient-bg font-medium text-white transition-all hover:shadow-glow",
+        "bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 font-medium text-white transition-all hover:shadow-glow",
         className
       )}
       {...props}
