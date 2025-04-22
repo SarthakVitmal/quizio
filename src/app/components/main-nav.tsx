@@ -68,7 +68,7 @@ export function MainNav() {
           <Button variant="outline" asChild>
             <Link href="/auth">Login</Link>
           </Button>
-          <Button asChild>
+          <Button asChild className="bg-purple-600">
             <Link href="/auth">Sign Up</Link>
           </Button>
         </div>
@@ -99,10 +99,10 @@ export function MainNav() {
             ))}
             <div className="mt-4 flex flex-col gap-2">
               <Button variant="outline" asChild className="w-full">
-                <Link href="/login">Login</Link>
+                <Link href="/auth">Login</Link>
               </Button>
-              <Button asChild className="w-full">
-                <Link href="/register">Sign Up</Link>
+              <Button asChild className="w-full bg-purple-600">
+                <Link href="/auth">Sign Up</Link>
               </Button>
             </div>
           </nav>

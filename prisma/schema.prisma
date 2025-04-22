@@ -1,55 +1,47 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider  = "postgresql"
-  // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-  // Further reading:
-  // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-  // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id             String        @id @default(uuid())
-  email          String        @unique
-  name           String?
-  createdQuizzes Quiz[]        @relation("UserCreatedQuizzes")
-  participations Participant[] @relation("UserParticipations")
   createdAt      DateTime      @default(now())
+  email          String        @unique
+  id             String        @id @default(uuid())
+  name           String?
+  password       String
   Account        Account[]
+  participations Participant[] @relation("UserParticipations")
+  createdQuizzes Quiz[]        @relation("UserCreatedQuizzes")
   Session        Session[]
 }
 
 model Quiz {
-  id        String   @id @default(cuid())
-  title     String
-  creatorId String
-  code      String   @unique
-  startTime DateTime
-  endTime   DateTime
-  isEnded   Boolean  @default(false)
-  createdAt DateTime @default(now())
-
-  creator      User          @relation("UserCreatedQuizzes", fields: [creatorId], references: [id])
-  questions    Question[]    @relation("QuizQuestions")
+  id           String        @id @default(cuid())
+  title        String
+  createdAt    DateTime      @default(now())
+  code         String        @unique
+  creatorId    String
+  endTime      DateTime
+  isEnded      Boolean       @default(false)
+  startTime    DateTime
   participants Participant[] @relation("QuizParticipants")
+  questions    Question[]    @relation("QuizQuestions")
+  creator      User          @relation("UserCreatedQuizzes", fields: [creatorId], references: [id])
 }
 
 model Question {
   id        String   @id @default(cuid())
   quizId    String
   text      String
-  options   String[] // You can also normalize into separate table if needed
-  answer    String // Correct answer
+  options   String[]
+  answer    String
   createdAt DateTime @default(now())
-
-  quiz Quiz @relation("QuizQuestions", fields: [quizId], references: [id])
+  quiz      Quiz     @relation("QuizQuestions", fields: [quizId], references: [id])
 }
 
 model Participant {
@@ -58,9 +50,8 @@ model Participant {
   userId   String
   score    Int      @default(0)
   joinedAt DateTime @default(now())
-
-  quiz Quiz @relation("QuizParticipants", fields: [quizId], references: [id])
-  user User @relation("UserParticipations", fields: [userId], references: [id])
+  quiz     Quiz     @relation("QuizParticipants", fields: [quizId], references: [id])
+  user     User     @relation("UserParticipations", fields: [userId], references: [id])
 }
 
 model Account {
@@ -77,8 +68,7 @@ model Account {
   id_token                 String?
   session_state            String?
   refresh_token_expires_in Int?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -88,8 +78,7 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {

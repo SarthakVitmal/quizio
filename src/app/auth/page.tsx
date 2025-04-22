@@ -1,4 +1,6 @@
+"use client"
 import Link from "next/link"
+import { useState } from "react"
 import { MainNav } from "@/app/components/main-nav"
 import { Footer } from "@/app/components/footer"
 import { Button } from "@/components/ui/button"
@@ -7,8 +9,98 @@ import { Label } from "@/components/ui/label"
 import { Card, Container, GradientButton, Heading } from "@/app/components/ui-components"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AtSign, Lock, SquareUserRound } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { api } from "@/trpc/react"
+import { Toaster, toast } from 'sonner';
 
 export default function AuthPage() {
+  const router = useRouter()
+  const utils = api.useContext()
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [loginEmail, setLoginEmail] = useState("")
+  const [loginPassword, setLoginPassword] = useState("")
+  const [isSignupLoading, setIsSignupLoading] = useState(false)
+  const [isLoginLoading, setIsLoginLoading] = useState(false)
+
+  // auth/page.tsx
+  const signup = api.auth.signup.useMutation({
+    onSuccess: (data) => {
+      if (data.success) {
+        toast.success("Account created successfully!");
+        router.push("/dashboard");
+      } else {
+        setIsSignupLoading(false);
+        if (data.code === 'EMAIL_EXISTS') {
+          toast.error("Email already in use");
+        } else {
+          toast.error("Failed to create account");
+        }
+      }
+    },
+    onError: (error) => {
+      setIsSignupLoading(false);
+      toast.error("An unexpected error occurred");
+    }
+  });
+
+  const login = api.auth.login.useMutation({
+    onSuccess: (data) => {
+      if (data.success) {
+        toast.success("Logged in successfully!");
+        router.push("/dashboard");
+      } else {
+        setIsLoginLoading(false);
+        if (data.code === 'USER_NOT_FOUND') {
+          toast.error("User not found. Please check your email.");
+        } else if (data.code === 'INVALID_PASSWORD') {
+          toast.error("Invalid password. Please try again.");
+        } else {
+          toast.error("Login failed. Please try again.");
+        }
+      }
+    },
+    onError: (error) => {
+      setIsLoginLoading(false);
+      toast.error("An unexpected error occurred");
+      console.error("Login error:", error);
+    }
+  });
+
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSignupLoading(true);
+
+    if (!name || !email || !password) {
+      toast.error("Please fill in all fields");
+      setIsSignupLoading(false);
+      return;
+    }
+
+    if (password.length < 8) {
+      toast.error("Password must be at least 8 characters");
+      setIsSignupLoading(false);
+      return;
+    }
+
+    await signup.mutateAsync({ name, email, password });
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoginLoading(true);
+    
+    if (!loginEmail || !loginPassword) {
+      toast.error("Please fill in all fields");
+      setIsLoginLoading(false);
+      return;
+    }
+  
+    await login.mutateAsync({ email: loginEmail, password: loginPassword });
+  };
+
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
@@ -33,29 +125,51 @@ export default function AuthPage() {
                 </TabsList>
 
                 <TabsContent value="login">
-                  <form className="space-y-4">
+                  <form onSubmit={handleLogin} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
+                      <Label htmlFor="login-email">Email</Label>
                       <div className="relative">
                         <AtSign className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input id="email" type="email" placeholder="name@example.com" className="pl-10" />
+                        <Input
+                          id="login-email"
+                          type="email"
+                          placeholder="name@example.com"
+                          className="pl-10"
+                          value={loginEmail}
+                          onChange={(e) => setLoginEmail(e.target.value)}
+                          disabled={isLoginLoading}
+                        />
                       </div>
                     </div>
 
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Label htmlFor="password">Password</Label>
+                        <Label htmlFor="login-password">Password</Label>
                         <Link href="/forgot-password" className="text-xs text-primary hover:underline">
                           Forgot password?
                         </Link>
                       </div>
                       <div className="relative">
                         <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input id="password" type="password" placeholder="••••••••" className="pl-10" />
+                        <Input
+                          id="login-password"
+                          type="password"
+                          placeholder="••••••••"
+                          className="pl-10"
+                          value={loginPassword}
+                          onChange={(e) => setLoginPassword(e.target.value)}
+                          disabled={isLoginLoading}
+                        />
                       </div>
                     </div>
 
-                    <GradientButton className="w-full">Sign In</GradientButton>
+                    <GradientButton
+                      type="submit"
+                      className="w-full"
+                      disabled={isLoginLoading}
+                    >
+                      {isLoginLoading ? "Signing in..." : "Sign In"}
+                    </GradientButton>
 
                     <div className="relative my-4">
                       <div className="absolute inset-0 flex items-center">
@@ -66,7 +180,12 @@ export default function AuthPage() {
                       </div>
                     </div>
 
-                    <Button variant="outline" className="w-full">
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      type="button"
+                      disabled={isLoginLoading}
+                    >
                       <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                         <path
                           d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -91,14 +210,22 @@ export default function AuthPage() {
                 </TabsContent>
 
                 <TabsContent value="register">
-                  <form className="space-y-4">
+                  <form onSubmit={handleSignup} className="space-y-4">
                     <div className="">
                       <div className="space-y-2">
                         <Label htmlFor="first-name">Name</Label>
                         <div className="relative">
                           <SquareUserRound className="absolute left-3 top-[0.6rem] h-4 w-4 text-muted-foreground" />
-                          <Input id="first-name" type="text" placeholder="John Doe" className="pl-10" />
-                          </div>
+                          <Input
+                            id="first-name"
+                            type="text"
+                            placeholder="John Doe"
+                            className="pl-10"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            disabled={isSignupLoading}
+                          />
+                        </div>
                       </div>
                     </div>
 
@@ -106,7 +233,15 @@ export default function AuthPage() {
                       <Label htmlFor="email">Email</Label>
                       <div className="relative">
                         <AtSign className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input id="email" type="email" placeholder="name@example.com" className="pl-10" />
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="name@example.com"
+                          className="pl-10"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          disabled={isSignupLoading}
+                        />
                       </div>
                     </div>
 
@@ -114,11 +249,25 @@ export default function AuthPage() {
                       <Label htmlFor="password">Password</Label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input id="password" type="password" placeholder="••••••••" className="pl-10" />
+                        <Input
+                          id="password"
+                          type="password"
+                          placeholder="••••••••"
+                          className="pl-10"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          disabled={isSignupLoading}
+                        />
                       </div>
                     </div>
 
-                    <GradientButton className="w-full">Create Account</GradientButton>
+                    <GradientButton
+                      type="submit"
+                      className="w-full"
+                      disabled={isSignupLoading}
+                    >
+                      {isSignupLoading ? "Creating account..." : "Create Account"}
+                    </GradientButton>
 
                     <div className="relative my-4">
                       <div className="absolute inset-0 flex items-center">
@@ -129,7 +278,12 @@ export default function AuthPage() {
                       </div>
                     </div>
 
-                    <Button variant="outline" className="w-full">
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      type="button"
+                      disabled={isSignupLoading}
+                    >
                       <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                         <path
                           d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -171,6 +325,7 @@ export default function AuthPage() {
       </main>
 
       <Footer />
+      <Toaster richColors position="top-center" closeButton={false} />
     </div>
   )
 }
