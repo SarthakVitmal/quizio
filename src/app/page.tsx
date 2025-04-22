@@ -37,13 +37,12 @@ export default function HomePage() {
               </div>
               <div className="relative mx-auto w-full max-w-md">
                 <div className="relative aspect-square animate-float">
-                  <Image
-                    src="/quiz.png"
+                  <img
+                    src="https://img.freepik.com/free-vector/online-survey-analysis-electronic-data-collection-digital-research-tool-computerized-study-analyst-considering-feedback-results-analysing-info-vector-isolated-concept-metaphor-illustration_335657-2807.jpg?ga=GA1.1.1506502641.1745329352&semt=ais_hybrid&w=740"
                     alt="Quiz illustration"
                     width={500}
                     height={500}
                     className="rounded-2xl"
-                    priority
                   />
                 </div>
                 <div className="absolute -right-4 -top-4 h-24 w-24 rounded-xl bg-purple-100 dark:bg-purple-900/20" />
@@ -155,7 +154,7 @@ export default function HomePage() {
                   </p>
                   <div className="flex flex-wrap gap-4">
                     <GradientButton asChild>
-                      <Link href="/register">Get Started Free</Link>
+                      <Link href="/auth">Get Started Free</Link>
                     </GradientButton>
                     <Button variant="outline" asChild>
                       <Link href="/contact">Contact Us</Link>
@@ -163,8 +162,8 @@ export default function HomePage() {
                   </div>
                 </div>
                 <div className="relative hidden md:block">
-                  <Image
-                    src="/placeholder.svg?height=300&width=300"
+                  <img
+                    src="https://img.freepik.com/free-vector/shrug-concept-illustration_114360-8833.jpg?ga=GA1.1.1506502641.1745329352&semt=ais_hybrid&w=740"
                     alt="Quiz platform"
                     width={300}
                     height={300}
