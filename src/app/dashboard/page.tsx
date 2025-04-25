@@ -1,17 +1,48 @@
+"use client"
 import Link from "next/link"
 import { Card, GradientButton } from "@/app/components/ui-components"
 import { Button } from "@/components/ui/button"
 import { Award, BarChart, BookOpen, Clock, PlusCircle, Trophy, Users } from "lucide-react"
 import Image from "next/image"
+import { useEffect, useState } from "react"
+import { api } from "@/trpc/react"
+import { usePathname, useRouter } from "next/navigation"
+import { jwtDecode } from "jwt-decode"
+
+type JwtPayload = { userId: string };
 
 export default function DashboardPage() {
+  const [userId, setUserId] = useState<string | null>(null);
+  const [tokenChecked, setTokenChecked] = useState(false);
+  const router = useRouter()
+  const pathname = usePathname()
+
+  const { data: user, isLoading } = api.auth.getUserById.useQuery(userId!, {
+    enabled: !!userId,
+  });
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode<JwtPayload>(token);
+        setUserId(decoded.userId);
+      } catch (error) {
+        console.error("Invalid token:", error);
+        localStorage.removeItem("token");
+        router.push("/auth"); 
+      }
+    }
+    setTokenChecked(true);
+  }, []);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground">
-            Welcome back, John! Here's an overview of your quizzes and performance.
+            Welcome back, {user?.name} Here's an overview of your quizzes and performance.
           </p>
         </div>
         <div className="flex gap-2">

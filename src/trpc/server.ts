@@ -18,6 +18,7 @@ const createContext = cache(async () => {
 
   return createTRPCContext({
     headers: heads,
+    res: {} as any, // Provide a mock or actual NextApiResponse object here
   });
 });
 

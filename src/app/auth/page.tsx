@@ -22,51 +22,45 @@ export default function AuthPage() {
   const [loginPassword, setLoginPassword] = useState("")
   const [isSignupLoading, setIsSignupLoading] = useState(false)
   const [isLoginLoading, setIsLoginLoading] = useState(false)
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
-  // auth/page.tsx
   const signup = api.auth.signup.useMutation({
-    onSuccess: (data) => {
-      if (data.success) {
+    onSuccess: () => {
+      setTimeout(()=>{
         toast.success("Account created successfully!");
-        router.push("/dashboard");
-      } else {
-        setIsSignupLoading(false);
-        if (data.code === 'EMAIL_EXISTS') {
-          toast.error("Email already in use");
-        } else {
-          toast.error("Failed to create account");
-        }
-      }
+      },2000);
+      window.location.reload()
+      router.push("/auth");
     },
-    onError: () => {
+    onError: (error) => {
       setIsSignupLoading(false);
-      toast.error("An unexpected error occurred");
+      if (error.data?.code === 'CONFLICT') {
+        toast.error("Email already in use");
+      } else {
+        toast.error("Failed to create account");
+      }
+      console.error("Signup error:", error);
     }
   });
 
   const login = api.auth.login.useMutation({
     onSuccess: (data) => {
-      if (data.success) {
-        toast.success("Logged in successfully!");
-        router.push("/dashboard");
-      } else {
-        setIsLoginLoading(false);
-        if (data.code === 'USER_NOT_FOUND') {
-          toast.error("User not found. Please check your email.");
-        } else if (data.code === 'INVALID_PASSWORD') {
-          toast.error("Invalid password. Please try again.");
-        } else {
-          toast.error("Login failed. Please try again.");
-        }
-      }
+      toast.success("Logged in successfully!");
+      localStorage.setItem("token", data.user.token);
+      router.push("/dashboard");
     },
     onError: (error) => {
       setIsLoginLoading(false);
-      toast.error("An unexpected error occurred");
+      if (error.data?.code === 'NOT_FOUND') {
+        toast.error("User not found. Please check your email.");
+      } else if (error.data?.code === 'UNAUTHORIZED') {
+        toast.error("Incorrect password. Please try again.");
+      } else {
+        toast.error("Login failed. Please try again.");
+      }
       console.error("Login error:", error);
     }
   });
-
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -210,21 +204,19 @@ export default function AuthPage() {
 
                 <TabsContent value="register">
                   <form onSubmit={handleSignup} className="space-y-4">
-                    <div className="">
-                      <div className="space-y-2">
-                        <Label htmlFor="first-name">Name</Label>
-                        <div className="relative">
-                          <SquareUserRound className="absolute left-3 top-[0.6rem] h-4 w-4 text-muted-foreground" />
-                          <Input
-                            id="first-name"
-                            type="text"
-                            placeholder="John Doe"
-                            className="pl-10"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            disabled={isSignupLoading}
-                          />
-                        </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="first-name">Name</Label>
+                      <div className="relative">
+                        <SquareUserRound className="absolute left-3 top-[0.6rem] h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="first-name"
+                          type="text"
+                          placeholder="John Doe"
+                          className="pl-10"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          disabled={isSignupLoading}
+                        />
                       </div>
                     </div>
 

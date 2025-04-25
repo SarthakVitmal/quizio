@@ -1,12 +1,18 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Logo } from "@/app/components/ui-components"
 import { Button } from "@/components/ui/button"
-import { BarChart, BookOpen, Home, LogOut, PlusCircle, Settings, User} from 'lucide-react'
+import { BarChart, BookOpen, Home, LogOut, PlusCircle, Settings, User } from 'lucide-react'
 import Image from "next/image"
+import { api } from "@/trpc/react"
+import { useState, useEffect } from "react"
+import {jwtDecode} from "jwt-decode"
+import { Toaster, toast } from "sonner"
+
+type JwtPayload = { userId: string };
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
   isOpen?: boolean
@@ -14,7 +20,37 @@ interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
 
 export function DashboardSidebar({ className, isOpen = true }: SidebarNavProps) {
   const pathname = usePathname()
+  const router = useRouter()
   
+  const [userId, setUserId] = useState<string | null>(null);
+  const [tokenChecked, setTokenChecked] = useState(false);
+
+  const { data: user, isLoading } = api.auth.getUserById.useQuery(userId!, {
+    enabled: !!userId,
+  });
+
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode<JwtPayload>(token);
+        setUserId(decoded.userId);
+      } catch (error) {
+        console.error("Invalid token:", error);
+        localStorage.removeItem("token");
+        router.push("/auth"); // optional: redirect to login
+      }
+    }
+    setTokenChecked(true);
+  }, []);
+
+  console.log("User data:", user)
+  console.log("User ID:", userId)
+  
+
+  // if (!tokenChecked) return <p>Loading...</p>;
   const routes = [
     {
       href: "/dashboard",
@@ -53,7 +89,30 @@ export function DashboardSidebar({ className, isOpen = true }: SidebarNavProps) 
       active: pathname === "/dashboard/settings",
     },
   ]
-  
+
+  const logout = api.auth.logout.useMutation({
+    onSuccess: () => {
+      router.push("/auth")
+    },
+    onError: (error) => {
+      console.error("Logout failed:", error)
+    },
+  })
+
+  if (isLoading) {
+    return (
+      <aside className={cn(
+        "flex h-screen flex-col border-r bg-muted/30",
+        isOpen ? "w-64" : "w-20",
+        className
+      )}>
+        <div className="flex h-full items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
+        </div>
+      </aside>
+    )
+  }
+
   return (
     <aside
       className={cn(
@@ -94,17 +153,23 @@ export function DashboardSidebar({ className, isOpen = true }: SidebarNavProps) 
       <div className="border-t p-4">
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 overflow-hidden rounded-full bg-muted">
-            <Image
-              src="/placeholder.svg?height=40&width=40"
-              alt="User avatar"
-              width={40}
-              height={40}
-            />
+            {user ? (
+              <div className="flex h-full w-full items-center justify-center bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                {/* {user?.name?.charAt(0).toUpperCase() || ""} */}
+              </div>
+            ) : (
+              <Image
+                src="/placeholder-user.jpg"
+                alt="User avatar"
+                width={40}
+                height={40}
+              />
+            )}
           </div>
           {isOpen && (
             <div className="flex-1 overflow-hidden">
-              <p className="truncate text-sm font-medium">John Doe</p>
-              <p className="truncate text-xs text-muted-foreground">john@example.com</p>
+              <p className="truncate text-sm font-medium">{user?.name || "Guest"}</p>
+              <p className="truncate text-xs text-muted-foreground">{user?.email || "guest@example.com"}</p>
             </div>
           )}
         </div>
@@ -115,11 +180,18 @@ export function DashboardSidebar({ className, isOpen = true }: SidebarNavProps) 
             "mt-4 w-full justify-start text-muted-foreground hover:text-foreground",
             !isOpen && "justify-center"
           )}
+          onClick={async () => {
+            localStorage.removeItem("token");
+            toast.success("Logged out successfully");
+            await new Promise(resolve => setTimeout(resolve, 1500)); 
+            router.push("/auth");
+          }}
         >
           <LogOut className="mr-2 h-4 w-4" />
           {isOpen && "Logout"}
         </Button>
       </div>
+      <Toaster position="top-center" richColors />
     </aside>
   )
 }
