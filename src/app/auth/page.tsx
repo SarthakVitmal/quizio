@@ -12,6 +12,7 @@ import { AtSign, Lock, SquareUserRound } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { api } from "@/trpc/react"
 import { Toaster, toast } from 'sonner';
+import {useEffect} from "react"
 
 export default function AuthPage() {
   const router = useRouter()
@@ -22,7 +23,19 @@ export default function AuthPage() {
   const [loginPassword, setLoginPassword] = useState("")
   const [isSignupLoading, setIsSignupLoading] = useState(false)
   const [isLoginLoading, setIsLoginLoading] = useState(false)
-  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    setToken(storedToken);
+  }, []);
+  
+  useEffect(() => {
+    if (token) {
+      router.push("/dashboard");
+    }
+  }, [token, router]); 
+  
 
   const signup = api.auth.signup.useMutation({
     onSuccess: () => {

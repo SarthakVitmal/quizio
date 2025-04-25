@@ -1,4 +1,4 @@
-/* eslint-disable react/no-unescaped-entities */
+"use client"
 import Link from "next/link"
 import Image from "next/image"
 import { MainNav } from "@/app/components/main-nav"
@@ -6,8 +6,24 @@ import { Footer } from "@/app/components/footer"
 import { Button } from "@/components/ui/button"
 import { Card, Container, GradientButton, Heading, Section } from "@/app/components/ui-components"
 import { BarChart, Brain, Clock, Globe, Trophy, Users } from 'lucide-react'
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 
 export default function HomePage() {
+  const router = useRouter();
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    setToken(storedToken);
+  }, []);
+
+  useEffect(() => {
+    if (token) {
+      router.push("/dashboard");
+    }
+  }, [token, router]); 
+  
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
