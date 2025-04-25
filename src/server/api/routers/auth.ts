@@ -3,13 +3,6 @@ import { createTRPCRouter, publicProcedure } from '../trpc';
 import { hash, compare } from 'bcryptjs';
 import { db } from '@/server/db';
 
-// Custom error class for auth-specific errors
-class AuthError extends Error {
-    constructor(message: string, public type: string) {
-        super(message);
-        this.name = 'AuthError';
-    }
-}
 
 export const authRouter = createTRPCRouter({
     signup: publicProcedure

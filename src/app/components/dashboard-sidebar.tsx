@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Logo } from "@/app/components/ui-components"
 import { Button } from "@/components/ui/button"
-import { BarChart, BookOpen, Home, LogOut, PlusCircle, Settings, User, Users } from 'lucide-react'
+import { BarChart, BookOpen, Home, LogOut, PlusCircle, Settings, User} from 'lucide-react'
+import Image from "next/image"
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
   isOpen?: boolean
@@ -93,7 +94,7 @@ export function DashboardSidebar({ className, isOpen = true }: SidebarNavProps) 
       <div className="border-t p-4">
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 overflow-hidden rounded-full bg-muted">
-            <img
+            <Image
               src="/placeholder.svg?height=40&width=40"
               alt="User avatar"
               width={40}

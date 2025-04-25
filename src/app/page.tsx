@@ -1,10 +1,11 @@
+/* eslint-disable react/no-unescaped-entities */
 import Link from "next/link"
 import Image from "next/image"
 import { MainNav } from "@/app/components/main-nav"
 import { Footer } from "@/app/components/footer"
 import { Button } from "@/components/ui/button"
 import { Card, Container, GradientButton, Heading, Section } from "@/app/components/ui-components"
-import { Award, BarChart, Brain, Clock, Globe, Lightbulb, Rocket, Trophy, Users } from 'lucide-react'
+import { BarChart, Brain, Clock, Globe, Trophy, Users } from 'lucide-react'
 
 export default function HomePage() {
   return (
@@ -12,7 +13,7 @@ export default function HomePage() {
       <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
         <MainNav />
       </header>
-      
+
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative overflow-hidden py-20 md:py-24 lg:py-32">
@@ -37,7 +38,7 @@ export default function HomePage() {
               </div>
               <div className="relative mx-auto w-full max-w-md">
                 <div className="relative aspect-square animate-float">
-                  <img
+                  <Image
                     src="https://img.freepik.com/free-vector/online-survey-analysis-electronic-data-collection-digital-research-tool-computerized-study-analyst-considering-feedback-results-analysing-info-vector-isolated-concept-metaphor-illustration_335657-2807.jpg?ga=GA1.1.1506502641.1745329352&semt=ais_hybrid&w=740"
                     alt="Quiz illustration"
                     width={500}
@@ -51,7 +52,7 @@ export default function HomePage() {
             </div>
           </Container>
         </section>
-        
+
         {/* Features Section */}
         <Section className="bg-muted/30">
           <Container>
@@ -63,7 +64,7 @@ export default function HomePage() {
                 Everything you need to create, share, and analyze quizzes in one platform
               </p>
             </div>
-            
+
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {features.map((feature) => (
                 <Card key={feature.title} hover className="flex flex-col items-start">
@@ -77,7 +78,7 @@ export default function HomePage() {
             </div>
           </Container>
         </Section>
-        
+
         {/* How It Works Section */}
         <Section>
           <Container>
@@ -89,7 +90,7 @@ export default function HomePage() {
                 Get started in minutes with our simple and intuitive platform
               </p>
             </div>
-            
+
             <div className="grid gap-8 md:grid-cols-3">
               {steps.map((step, index) => (
                 <div key={step.title} className="flex flex-col items-center text-center">
@@ -103,7 +104,7 @@ export default function HomePage() {
             </div>
           </Container>
         </Section>
-        
+
         {/* Testimonials Section */}
         <Section className="bg-muted/30">
           <Container>
@@ -115,7 +116,7 @@ export default function HomePage() {
                 Join thousands of satisfied educators and students
               </p>
             </div>
-            
+
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {testimonials.map((testimonial) => (
                 <Card key={testimonial.name} className="flex flex-col">
@@ -139,7 +140,7 @@ export default function HomePage() {
             </div>
           </Container>
         </Section>
-        
+
         {/* CTA Section */}
         <Section>
           <Container>
@@ -162,7 +163,7 @@ export default function HomePage() {
                   </div>
                 </div>
                 <div className="relative hidden md:block">
-                  <img
+                  <Image
                     src="https://img.freepik.com/free-vector/shrug-concept-illustration_114360-8833.jpg?ga=GA1.1.1506502641.1745329352&semt=ais_hybrid&w=740"
                     alt="Quiz platform"
                     width={300}
@@ -175,7 +176,7 @@ export default function HomePage() {
           </Container>
         </Section>
       </main>
-      
+
       <Footer />
     </div>
   )
@@ -233,12 +234,12 @@ const testimonials = [
   {
     name: "Sarah Johnson",
     role: "High School Teacher",
-    content: "Quizio has transformed how I engage with my students. The interactive quizzes keep them motivated and the analytics help me identify areas where they need more support.",
+    content: "Quizio has transformed how I engage with my students. The interactive quizzes keep them motivated and the analytics help me identify areas where they need more support."
   },
   {
     name: "Michael Chen",
     role: "University Student",
-    content: "I use Quizio to study for exams and it's been a game-changer. The competitive element makes learning fun and I retain information much better.",
+    content: "The competitive element makes learning fun and I retain information much better.",
   },
   {
     name: "Dr. Emily Rodriguez",

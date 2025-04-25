@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Card, GradientButton } from "@/app/components/ui-components"
 import { Button } from "@/components/ui/button"
 import { Award, BarChart, BookOpen, Clock, PlusCircle, Trophy, Users } from "lucide-react"
+import Image from "next/image"
 
 export default function DashboardPage() {
   return (
@@ -147,7 +148,7 @@ export default function DashboardPage() {
                 <div className="flex -space-x-2">
                   {[1, 2, 3].map((i) => (
                     <div key={i} className="h-6 w-6 overflow-hidden rounded-full border-2 border-background bg-muted">
-                      <img
+                      <Image
                         src={`/placeholder.svg?height=24&width=24&text=${i}`}
                         alt="Participant"
                         width={24}

@@ -15,7 +15,6 @@ import { Toaster, toast } from 'sonner';
 
 export default function AuthPage() {
   const router = useRouter()
-  const utils = api.useContext()
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -39,7 +38,7 @@ export default function AuthPage() {
         }
       }
     },
-    onError: (error) => {
+    onError: () => {
       setIsSignupLoading(false);
       toast.error("An unexpected error occurred");
     }

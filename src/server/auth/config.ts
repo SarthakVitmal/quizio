@@ -36,14 +36,14 @@ export const authConfig = {
     DiscordProvider,
     EmailProvider({
       server:{
-        host: process.env.EMAIL_SERVER || 'https://localhost:3000',
+        host: process.env.EMAIL_SERVER ?? 'https://localhost:3000',
         port: 587,
         auth: {
           user: "apikey",
-          pass: process.env.EMAIL_PASSWORD || "",
+          pass: process.env.EMAIL_PASSWORD ?? "",
         },
       },
-      from: process.env.EMAIL_FROM || "sarthakvitmal0829@gmail.com",
+      from: process.env.EMAIL_FROM ?? "sarthakvitmal0829@gmail.com",
       ...(process.env.NODE_ENV === "production" ? {
       sendVerificationRequest({url}){
         console.log("Login Link: ", url);

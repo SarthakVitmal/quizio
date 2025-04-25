@@ -6,6 +6,7 @@ import { useState } from "react"
 import { DashboardSidebar } from "@/app/components/dashboard-sidebar"
 import { Button } from "@/components/ui/button"
 import { Menu } from "lucide-react"
+import Image from "next/image"
 
 export default function DashboardLayout({
   children,
@@ -61,7 +62,7 @@ export default function DashboardLayout({
               </Button>
             </div>
             <div className="h-8 w-8 overflow-hidden rounded-full bg-muted">
-              <img src="/placeholder.svg?height=32&width=32" alt="User avatar" width={32} height={32} />
+              <Image src="/placeholder.svg?height=32&width=32" alt="User avatar" width={32} height={32} />
             </div>
           </div>
         </header>
