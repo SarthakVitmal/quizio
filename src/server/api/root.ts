@@ -1,4 +1,4 @@
-import { quizioRouter } from "@/server/api/routers/quizio";
+import { quizRouter } from "@/server/api/routers/quiz";
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 import { authRouter } from "./routers/auth";
 
@@ -8,7 +8,7 @@ import { authRouter } from "./routers/auth";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  quizio: quizioRouter,
+  quiz: quizRouter,
   auth: authRouter
 });
 

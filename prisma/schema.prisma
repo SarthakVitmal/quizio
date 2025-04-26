@@ -24,6 +24,7 @@ model Quiz {
   id           String        @id @default(cuid())
   title        String
   createdAt    DateTime      @default(now())
+  subject      String
   code         String        @unique
   creatorId    String
   endTime      DateTime
