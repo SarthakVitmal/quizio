@@ -105,7 +105,7 @@ export const authRouter = createTRPCRouter({
 
         const user = await db.user.findUnique({
           where: { id: decoded.userId },
-          select: { id: true, name: true, email: true }
+          select: { id: true, name: true, email: true, createdAt: true, role: true , bio: true},
         });
 
         if (!user) {

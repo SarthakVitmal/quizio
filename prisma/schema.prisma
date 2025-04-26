@@ -14,6 +14,8 @@ model User {
   id             String        @id @default(uuid())
   name           String?
   password       String
+  role           String?
+  bio            String?
   Account        Account[]
   participations Participant[] @relation("UserParticipations")
   createdQuizzes Quiz[]        @relation("UserCreatedQuizzes")
@@ -24,12 +26,12 @@ model Quiz {
   id           String        @id @default(cuid())
   title        String
   createdAt    DateTime      @default(now())
-  subject      String
   code         String        @unique
   creatorId    String
   endTime      DateTime
   isEnded      Boolean       @default(false)
   startTime    DateTime
+  subject      String
   participants Participant[] @relation("QuizParticipants")
   questions    Question[]    @relation("QuizQuestions")
   creator      User          @relation("UserCreatedQuizzes", fields: [creatorId], references: [id])
