@@ -57,5 +57,48 @@ export const quizRouter = createTRPCRouter({
         console.error("Error creating quiz:", error);
         throw new Error(error.message || "Failed to create quiz");
       }
-    })
+    }),
+    getQuizCount: publicProcedure
+    .input(
+      z.object({
+        userId: z.string().min(1),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      try {
+        const count = await ctx.db.quiz.count({
+          where: {
+            creatorId: input.userId,
+          },
+        });
+        return { count };
+      } catch (error: any) {
+        console.error("Error fetching quiz count:", error);
+        throw new Error(error.message || "Failed to fetch quiz count");
+      }
+    }),
+    getRecentQuiz: publicProcedure
+    .input(
+      z.object({
+        userId: z.string().min(1),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      try {
+        const quizzes = await ctx.db.quiz.findMany({
+          where: {
+            creatorId: input.userId,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          take: 5,
+        });
+        return quizzes;
+      } catch (error: any) {
+        console.error("Error fetching recent quizzes:", error);
+        throw new Error(error.message || "Failed to fetch recent quizzes");
+      }
+    }
+  ),
 });

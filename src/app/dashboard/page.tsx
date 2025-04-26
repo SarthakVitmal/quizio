@@ -21,6 +21,16 @@ export default function DashboardPage() {
     enabled: !!userId,
   });
 
+  const count = api.quiz.getQuizCount.useQuery({ userId: userId! }, {
+    enabled: !!userId,
+  });
+
+  const recentQuiz = api.quiz.getRecentQuiz.useQuery({ userId: userId! }, {
+    enabled: !!userId,
+  });
+
+  console.log(recentQuiz.data);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -65,7 +75,7 @@ export default function DashboardPage() {
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Quizzes Created</p>
-            <h3 className="text-2xl font-bold">12</h3>
+            <h3 className="text-xl font-bold">{count.data?.count}</h3>
           </div>
         </Card>
 
@@ -110,14 +120,14 @@ export default function DashboardPage() {
           </div>
 
           <div className="space-y-4">
-            {recentQuizzes.map((quiz) => (
+            {recentQuiz.data?.map((quiz) => (
               <div key={quiz.id} className="flex items-center gap-4">
                 <div className="rounded-lg bg-muted p-2">
-                  <quiz.icon className="h-5 w-5 text-muted-foreground" />
+                  {/* <quiz.icon className="h-5 w-5 text-muted-foreground" /> */}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="truncate font-medium">{quiz.title}</p>
-                  <p className="text-sm text-muted-foreground">{quiz.date}</p>
+                  {/* <p className="text-sm text-muted-foreground">{quiz.date}</p> */}
                 </div>
                 <Button variant="outline" size="sm" asChild>
                   <Link href={`/dashboard/quiz/${quiz.id}`}>View</Link>

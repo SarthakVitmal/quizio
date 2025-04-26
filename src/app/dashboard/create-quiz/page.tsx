@@ -38,6 +38,8 @@ export default function CreateQuizPage() {
     }
   })
 
+
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
