@@ -77,24 +77,24 @@ export const profileRouter = createTRPCRouter({
             }
         }),
 
-    uploadProfilePicture: protectedProcedure
-        .input(z.object({ imageUrl: z.string().url() }))
-        .mutation(async ({ ctx, input }) => {
-            try {
-                const updatedUser = await db.user.update({
-                    where: { id: ctx.session.user.id },
-                    data: { image: input.imageUrl }
-                })
+    // uploadProfilePicture: protectedProcedure
+    //     .input(z.object({ imageUrl: z.string().url() }))
+    //     .mutation(async ({ ctx, input }) => {
+    //         try {
+    //             const updatedUser = await db.user.update({
+    //                 where: { id: ctx.session.user.id },
+    //                 data: { image: input.imageUrl }
+    //             })
 
-                return {
-                    success: true,
-                    imageUrl: updatedUser.image
-                }
-            } catch (error) {
-                throw new TRPCError({
-                    code: 'INTERNAL_SERVER_ERROR',
-                    message: 'Failed to update profile picture'
-                })
-            }
-        })
+    //             return {
+    //                 success: true,
+    //                 imageUrl: updatedUser.image
+    //             }
+    //         } catch (error) {
+    //             throw new TRPCError({
+    //                 code: 'INTERNAL_SERVER_ERROR',
+    //                 message: 'Failed to update profile picture'
+    //             })
+    //         }
+    //     })
 });
