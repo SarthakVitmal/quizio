@@ -101,4 +101,27 @@ export const quizRouter = createTRPCRouter({
       }
     }
   ),
+  getQuizByCode: publicProcedure
+    .input(z.object({ code: z.string().min(1) }))
+    .query(async ({ input, ctx }) => {
+      try {
+        const quiz = await ctx.db.quiz.findUnique({
+          where: { code: input.code },
+          include: { questions: true },
+        });
+        return quiz;
+      } catch (error: any) {
+        console.error("Error fetching quiz by code:", error);
+        throw new Error(error.message || "Failed to fetch quiz by code");
+      }
+    }),
+    getAllQuiz:publicProcedure
+    .input(z.string())
+    .query(async ({ input }) => {
+      const quizzes = await db.quiz.findMany({
+        where: { creatorId: input },
+        select: {id:true, title: true, subject:true, startTime: true},
+      });
+      return quizzes;
+    }),
 });

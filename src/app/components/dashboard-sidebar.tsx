@@ -46,9 +46,6 @@ export function DashboardSidebar({ className, isOpen = true }: SidebarNavProps) 
     setTokenChecked(true);
   }, []);
 
-  console.log("User data:", user)
-  console.log("User ID:", userId)
-  
 
   // if (!tokenChecked) return <p>Loading...</p>;
   const routes = [
@@ -182,6 +179,7 @@ export function DashboardSidebar({ className, isOpen = true }: SidebarNavProps) 
           )}
           onClick={async () => {
             localStorage.removeItem("token");
+            document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
             toast.success("Logged out successfully");
             await new Promise(resolve => setTimeout(resolve, 1500)); 
             router.push("/auth");

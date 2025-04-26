@@ -7,7 +7,7 @@ import { serialize, parse } from 'cookie';
 import { TRPCError } from '@trpc/server';
 
 const JWT_SECRET = process.env.JWT_SECRET ?? 'dduisdsiuddsuisdnfuisihserewryw3yw78yrwe7ewygfd';
-const COOKIE_NAME = process.env.AUTH_COOKIE_NAME ?? 'auth-token';
+const COOKIE_NAME = process.env.AUTH_COOKIE_NAME ?? 'token';
 
 export const authRouter = createTRPCRouter({
   signup: publicProcedure
@@ -127,5 +127,14 @@ export const authRouter = createTRPCRouter({
       if (!user) throw new Error("User not found");
       return user;
     }),
-
+    getUsernameById: publicProcedure
+    .input(z.string())
+    .query(async ({ input }) => {
+      const user = await db.user.findUnique({
+        where: { id: input },
+        select: { name: true },
+      });
+      if (!user) throw new Error("User not found");
+      return user.name;
+    }),
 });

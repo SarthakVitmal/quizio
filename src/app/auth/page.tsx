@@ -60,6 +60,7 @@ export default function AuthPage() {
     onSuccess: (data) => {
       toast.success("Logged in successfully!");
       localStorage.setItem("token", data.user.token);
+      document.cookie = `token=${data.user.token}; path=/; max-age=604800;`;
       router.push("/dashboard");
     },
     onError: (error) => {
